@@ -4,12 +4,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
+import android.preference.PreferenceFragment;
 import android.util.Log;
 import android.widget.Toast;
-import android.preference.PreferenceFragment;
 
 
 
@@ -19,9 +20,10 @@ public class SettingActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (savedInstanceState == null) {
-            getFragmentManager().beginTransaction()
-                    .replace(android.R.id.content, new SettingsFragment())
-                    .commit();
+            
+        	getFragmentManager().beginTransaction()
+            	.replace(android.R.id.content, new SettingsFragment(this))
+                .commit();
         }
     }
 
@@ -29,12 +31,11 @@ public class SettingActivity extends Activity {
      * A placeholder fragment containing a simple view.
      */
     public static class SettingsFragment extends PreferenceFragment implements OnSharedPreferenceChangeListener {
-    	
+    	private DataHolder dh = null;
     	public static final String KEY_PREF_NAME_CHOICE = "pref_key_name_choice";
     	
     	@Override
-    	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
-    			String key) {
+    	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
     		if (key.equals(KEY_PREF_NAME_CHOICE)) {
     			Set<String> choice = sharedPreferences.getStringSet(key, new HashSet<String>());
     			String[] choice_array = choice.toArray(new String[choice.size()]);
@@ -44,7 +45,7 @@ public class SettingActivity extends Activity {
     			Log.d("log_test", "========");
     			for (String name : choice_array) {
     				Log.d("log_test", name);
-    				toast_message += (name+", ");
+    				toast_message += (dh.findIndexOfValue(name) + ": "+name+"    , ");
 				}
     			
     			if (choice_array.length != 0) {
@@ -57,7 +58,8 @@ public class SettingActivity extends Activity {
     		
     	}
 
-        public SettingsFragment() {
+        public SettingsFragment(Context c) {
+        	dh = new DataHolder(c,null);
         }
 
         @Override
@@ -82,4 +84,5 @@ public class SettingActivity extends Activity {
         }
 
     }
+    
 }
